@@ -26,9 +26,9 @@ import {
   PacketLobbyInfoParser,
 } from './parsers/f120/parsers.js';
 
-type SendTo = 'f120' | 'f121' | 'f122' | 'f123' | 'fm7';
+type TargetSim = 'f120' | 'f121' | 'f122' | 'f123' | 'fm7';
 
-export const f120Parser = (msg: ArrayBuffer, rinfo: RemoteInfo, sendTo: SendTo = 'f120') => {
+export const f120Parser = (msg: ArrayBuffer, rinfo: RemoteInfo, targetSim: TargetSim = 'f120') => {
   const buffer = Buffer.from(msg);
   switch (rinfo.size) {
     case packetSize.Motion: {
@@ -58,7 +58,11 @@ export const f120Parser = (msg: ArrayBuffer, rinfo: RemoteInfo, sendTo: SendTo =
     case packetSize.CarTelemetry: {
       const parser = new PacketCarTelemetryParser();
       const data = parser.parse(buffer);
-      return f120CarTelemetryDataSender(data);
+      console.log('Im reaching the point');
+      if (targetSim === 'f120') {
+        return f120CarTelemetryDataSender(data);
+      }
+      break;
     }
     case packetSize.CarStatus: {
       console.log('before desaster');

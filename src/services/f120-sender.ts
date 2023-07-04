@@ -1,50 +1,34 @@
 import { Buffer } from 'node:buffer';
 
-interface F120Header {
-  m_packetFormat?: number;
-  m_gameMajorVersion?: number;
-  m_gameMinorVersion?: number;
-  m_packetVersion?: number;
-  m_packetId?: number;
-  m_sessionUID?: bigint;
-  m_sessionTime?: number;
-  m_frameIdentifier?: number;
-  m_playerCarIndex?: number;
-  m_secondaryPlayerCarIndex?: number;
+import {
+  packetSize,
+  PacketHeader,
+  CarTelemetryData,
+  PacketMotionData,
+  PacketSessionData,
+  PacketLapData,
+  PacketEventData,
+  PacketParticipantsData,
+  PacketCarSetupData,
+  PacketCarStatusData,
+  PacketFinalClassificationData,
+  PacketLobbyInfoData,
+} from './parsers/f120/types.js';
+
+interface PacketCarTelemetryData {
+  m_header?: PacketHeader;
+  m_carTelemetryData?: CarTelemetryData[];
 }
 
-interface CarTelemetryDataData {
-  m_speed?: number;
-  m_throttle?: number;
-  m_steer?: number;
-  m_brake?: number;
-  m_clutch?: number;
-  m_gear?: number;
-  m_engineRPM?: number;
-  m_drs?: number;
-  m_revLightsPercent?: number;
-  m_brakesTemperature?: number[];
-  m_tyresSurfaceTemperature?: number[];
-  m_tyresInnerTemperature?: number[];
-  m_engineTemperature?: 110;
-  m_tyresPressure?: number[];
-  m_surfaceType?: number[];
-}
-
-interface CarTelemetryData {
-  m_header?: F120Header;
-  m_carTelemetryData?: CarTelemetryDataData[];
-}
-
-export function f120CarTelemetryDataSender(data: CarTelemetryData) {
+export function f120CarTelemetryDataSender(data: PacketCarTelemetryData) {
   const buf1 = Buffer.allocUnsafe(1307);
   let offset = 0;
-
+  //console.log('sending', data);
   // Header
-  offset = buf1.writeUint16LE(data.m_header?.m_packetFormat ?? 2020, offset);
-  offset = buf1.writeUint8(data.m_header?.m_gameMajorVersion ?? 1, offset);
-  offset = buf1.writeUint8(data.m_header?.m_gameMinorVersion ?? 19, offset);
-  offset = buf1.writeUint8(data.m_header?.m_packetVersion ?? 1, offset);
+  offset = buf1.writeUint16LE(2020, offset);
+  offset = buf1.writeUint8(1, offset);
+  offset = buf1.writeUint8(19, offset);
+  offset = buf1.writeUint8(1, offset);
   offset = buf1.writeUint8(data.m_header?.m_packetId ?? 6, offset);
   offset = buf1.writeBigUInt64LE(data.m_header?.m_sessionUID ?? 6444400806942569751n, offset);
   offset = buf1.writeFloatLE(data.m_header?.m_sessionTime ?? 226.80303955078125, offset);

@@ -13,6 +13,7 @@ export class CarTelemetryParser extends Parser {
       .uint16le('m_engineRPM')
       .uint8('m_drs')
       .uint8('m_revLightsPercent')
+      .uint16le('m_revLightsBitValue')
       .array('m_brakesTemperature', {
         length: 4,
         type: new Parser().uint16le(''),
@@ -48,7 +49,6 @@ export default class PacketCarTelemetryParser extends Parser {
         length: 22,
         type: new CarTelemetryParser(),
       })
-      .uint32('m_buttonStatus')
       .uint8('m_mfdPanelIndex')
       .uint8('m_mfdPanelIndexSecondaryPlayer')
       .int8('m_suggestedGear');
